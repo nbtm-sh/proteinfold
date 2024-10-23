@@ -67,6 +67,18 @@ workflow PIPELINE_INITIALISATION {
     //
     ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
 
+    if (params.split_fasta) {
+
+        ch_samplesheet.splitFasta(record: [id:true])
+                    .map{ record -> record.id.toString() }
+                    .set{ ID }.view()
+        ch_samplesheet = ch_samplesheet.map{meta, fasta -> fasta}
+                                    .splitFasta( by:1, file: true )
+                                    .map{fasta -> [[id:record.id], fasta ]}.view()
+    }
+
+    ch_samplesheet.view()
+
     emit:
     samplesheet = ch_samplesheet
     versions    = ch_versions

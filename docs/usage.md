@@ -35,6 +35,8 @@ The samplesheet can have as many columns as you desire, however, there is a stri
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
+Each FASTA file is assumed to contain a single protein sequence unless you are using multimer mode. If you want to provide a FASTA file with multiple protein sequences, each to be folded individually, you can supply one or more FASTA files containing one or more sequences and use the --split_fasta parameter. In this case, each sequence in the FASTA file will be folded individually and in parallel, as if you had listed each sequence separately in the samplesheet.
+
 ## Running the pipeline
 
 The typical commands for running the pipeline on AlphaFold2, Colabfold and ESMFold modes are shown below.

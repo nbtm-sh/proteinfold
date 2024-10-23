@@ -1,3 +1,3 @@
-sequence,fasta
-T1024,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1024.fasta
-T1026,https://raw.githubusercontent.com/nf-core/test-datasets/proteinfold/testdata/sequences/T1026.fasta
+sequence,fasta,reference,dependencies
+seatoxin-ref,https://raw.githubusercontent.com/nf-core/test-datasets/multiplesequencealign/testdata/setoxin-ref.fa,https://raw.githubusercontent.com/nf-core/test-datasets/multiplesequencealign/testdata/setoxin.ref,https://raw.githubusercontent.com/nf-core/test-datasets/multiplesequencealign/testdata/af2_structures/seatoxin-ref.tar.gz
+toxin-ref,https://raw.githubusercontent.com/nf-core/test-datasets/multiplesequencealign/testdata/toxin-ref.fa,https://raw.githubusercontent.com/nf-core/test-datasets/multiplesequencealign/testdata/toxin.ref,

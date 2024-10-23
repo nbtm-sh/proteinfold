@@ -13,6 +13,12 @@
                 "errorMessage": "Sequence name must be provided and cannot contain spaces",
                 "meta": ["id"]
             },
+            "id": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sequence name must be provided and cannot contain spaces",
+                "meta": ["id"]
+            },
             "fasta": {
                 "type": "string",
                 "format": "file-path",
@@ -21,6 +27,9 @@
                 "errorMessage": "Fasta file must be provided, cannot contain spaces and must have extension '.fa' or '.fasta'"
             }
         },
-        "required": ["sequence", "fasta"]
+        "oneOf": [
+            { "required": ["sequence", "fasta"] },
+            { "required": ["id", "fasta"] }
+        ]
     }
 }
