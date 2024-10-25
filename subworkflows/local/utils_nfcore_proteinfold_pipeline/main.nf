@@ -235,13 +235,13 @@ def cleanHeader(header) {
 }
 
 def validateFasta(fasta) {
-    // extract headers 
+    // extract headers
     def headers = fasta.findAll { it.startsWith('>') }
     // if headers are not unique, throw an error
     if (headers.size() != headers.unique().size()) {
         throw new Exception("Invalid FASTA file. The headers are not unique.")
     }
-    // check headers that are malformed 
+    // check headers that are malformed
     headers.each { header ->
         if (header =~ /[ \t;,]/) {
             // warn user that the header contains special characters
