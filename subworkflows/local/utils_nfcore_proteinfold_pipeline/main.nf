@@ -66,25 +66,20 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input
     //
     ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
-
     if (params.split_fasta) {
-        // Extract all sequence headers from the fasta file
-        // to keep track of which sequences belong to which dataset
-        // and create a new channel [[id:{dataset_id}, sequence:{sequence_id}]]
-        ch_samplesheet.splitFasta(by:1, record: [header:true])
-                      .map{meta, record -> [record.header, meta]}
-                      .set{dataset_sequence_mapping}
+        // here we have to validate that the ids are unique and valid as an extra step
+        // since it is not done with the samplesheet schema (they are all in the same file)
+        ch_samplesheet.map { meta, fasta ->
+            validateFasta(fasta)
+        }
 
         // Split the fasta file into individual files for each sequence
         ch_samplesheet.map{ meta,fasta -> fasta}
-                        .splitFasta( record: [id: true, sequence: true] )
+                        .splitFasta( record: [header: true, sequence: true] )
                         .collectFile { item ->
-                            [ "${item["id"]}.fa", ">" + item["id"] + '\n' +item["sequence"] ]
+                            [ "${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
                         }.map{
-                            file -> [file.baseName, file]
-                        }.combine(dataset_sequence_mapping, by:0)
-                        .map{
-                            id, file, meta -> [[id:id, dataset:meta.id], file]
+                            file -> [[id: file.baseName], file]
                         }.set{ch_samplesheet}
     }
 
@@ -235,3 +230,22 @@ def methodsDescriptionText(mqc_methods_yaml) {
     return description_html.toString()
 }
 
+def cleanHeader(header) {
+    return header.replaceAll(" ", "_").replaceAll(",", "").replaceAll(";","")
+}
+
+def validateFasta(fasta) {
+    // extract headers 
+    def headers = fasta.findAll { it.startsWith('>') }
+    // if headers are not unique, throw an error
+    if (headers.size() != headers.unique().size()) {
+        throw new Exception("Invalid FASTA file. The headers are not unique.")
+    }
+    // check headers that are malformed 
+    headers.each { header ->
+        if (header =~ /[ \t;,]/) {
+            // warn user that the header contains special characters
+            log.warn "The header ${header} contains special characters. They have been automatically removed."
+        }
+    }
+}
