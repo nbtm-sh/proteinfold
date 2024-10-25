@@ -64,6 +64,7 @@ workflow NFCORE_PROTEINFOLD {
     ch_multiqc      = Channel.empty()
     ch_versions     = Channel.empty()
     ch_report_input = Channel.empty()
+    ch_outputsheet  = Channel.empty()
 
     //
     // WORKFLOW: Run alphafold2
@@ -146,7 +147,6 @@ workflow NFCORE_PROTEINFOLD {
             params.create_colabfold_index
         )
         ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
-
         //
         // WORKFLOW: Run nf-core/colabfold workflow
         //
@@ -159,6 +159,7 @@ workflow NFCORE_PROTEINFOLD {
             PREPARE_COLABFOLD_DBS.out.uniref30,
             params.num_recycles_colabfold
         )
+
         ch_multiqc  = COLABFOLD.out.multiqc_report
         ch_versions = ch_versions.mix(COLABFOLD.out.versions)
         ch_report_input = ch_report_input.mix(
@@ -168,6 +169,8 @@ workflow NFCORE_PROTEINFOLD {
                 .join(COLABFOLD.out.msa)
                 .map { it[0]["model"] = "colabfold"; it }
         )
+        // ch_outputsheet = ch_report_input.transpose(by:1).filter{it[1].name.contains("rank_01")}
+        // ch_outputsheet.view()
     }
 
     //
@@ -230,6 +233,7 @@ workflow NFCORE_PROTEINFOLD {
             ch_foldseek_db
         )
     }
+
 
     emit:
     multiqc_report = ch_multiqc

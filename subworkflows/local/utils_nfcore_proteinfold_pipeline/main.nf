@@ -68,16 +68,25 @@ workflow PIPELINE_INITIALISATION {
     ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
 
     if (params.split_fasta) {
+        // Extract all sequence headers from the fasta file
+        // to keep track of which sequences belong to which dataset
+        // and create a new channel [[id:{dataset_id}, sequence:{sequence_id}]]
+        ch_samplesheet.splitFasta(by:1, record: [header:true])
+                      .map{meta, record -> [record.header, meta]}
+                      .set{dataset_sequence_mapping}
 
-        ch_samplesheet.splitFasta(record: [id:true])
-                    .map{ record -> record.id.toString() }
-                    .set{ ID }.view()
-        ch_samplesheet = ch_samplesheet.map{meta, fasta -> fasta}
-                                    .splitFasta( by:1, file: true )
-                                    .map{fasta -> [[id:record.id], fasta ]}.view()
+        // Split the fasta file into individual files for each sequence
+        ch_samplesheet.map{ meta,fasta -> fasta}
+                        .splitFasta( record: [id: true, sequence: true] )
+                        .collectFile { item ->
+                            [ "${item["id"]}.fa", ">" + item["id"] + '\n' +item["sequence"] ]
+                        }.map{
+                            file -> [file.baseName, file]
+                        }.combine(dataset_sequence_mapping, by:0)
+                        .map{
+                            id, file, meta -> [[id:id, dataset:meta.id], file]
+                        }.set{ch_samplesheet}
     }
-
-    ch_samplesheet.view()
 
     emit:
     samplesheet = ch_samplesheet
