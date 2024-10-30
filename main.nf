@@ -245,11 +245,9 @@ workflow NFCORE_PROTEINFOLD {
         ch_versions,
         ch_multiqc,
         Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first(),
-        
         ch_multiqc_config.first(),
         ch_multiqc_logo.first(),
-        ch_multiqc_methods_description.first(),
-        
+        ch_multiqc_methods_description.first(),       
         ch_alphafold2_out,
         ch_esmfold_out,
         ch_colabfold_out

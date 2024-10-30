@@ -111,14 +111,6 @@ workflow POST_PROCESSING {
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-        //ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_rep)
-        //ch_multiqc_rep.view()
-        //ch_multiqc_rep.combine(ch_multiqc_files.collect().map{[it]}).view()//.flatten().toSortedList().view()
-        //    ch_multiqc_config.view()
-        //    ch_multiqc_custom_config.view()
-        //    ch_multiqc_logo.view()
-        //ch_multiqc_rep.transpose().combine(ch_multiqc_files).map{[it[0], it[1]]}.mix(ch_multiqc_rep.transpose().combine(ch_multiqc_files).map{[it[0], it[2]]}).groupTuple().view()
-        //ch_multiqc_rep.combine(ch_multiqc_files.collect().map{[it]}).map{[it[0], it[1] + it[2]]}.view()
         MULTIQC (
             ch_multiqc_rep.combine(ch_multiqc_files.collect().map{[it]}).map{[it[0], it[1] + it[2]]},
             ch_multiqc_config,
@@ -134,5 +126,5 @@ workflow POST_PROCESSING {
 
     emit:
     versions   = ch_versions
-    multiqc_report = ch_multiqc_report 
+    multiqc_report = ch_multiqc_report
 }
