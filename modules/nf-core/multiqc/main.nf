@@ -7,7 +7,7 @@ process MULTIQC {
         'biocontainers/multiqc:1.25.1--pyhdfd78af_0' }"
 
     input:
-    path  multiqc_files
+    tuple val(meta), path(multiqc_files)
     path(multiqc_config)
     path(extra_multiqc_config)
     path(multiqc_logo)
@@ -25,7 +25,7 @@ process MULTIQC {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ? "--filename ${task.ext.prefix}.html" : ''
+    def prefix = task.ext.prefix ? "--filename ${task.ext.prefix}.html" : "--filename multiqc_report_${meta.model}.html"
     def config = multiqc_config ? "--config $multiqc_config" : ''
     def extra_config = extra_multiqc_config ? "--config $extra_multiqc_config" : ''
     def logo = multiqc_logo ? "--cl-config 'custom_logo: \"${multiqc_logo}\"'" : ''
