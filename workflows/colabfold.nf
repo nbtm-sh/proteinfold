@@ -35,7 +35,7 @@ workflow COLABFOLD {
     num_recycles           // int: Number of recycles for esmfold
 
     main:
-    ch_multiqc_files = Channel.empty()
+    ch_multiqc_report = Channel.empty()
 
     if (params.colabfold_server == 'webserver') {
         //
@@ -104,15 +104,23 @@ workflow COLABFOLD {
             ch_uniref30,
             num_recycles
         )
-        ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
+        ch_versions    = ch_versions.mix(COLABFOLD_BATCH.out.versions)
     }
+    
+    COLABFOLD_BATCH
+        .out
+        .multiqc
+        .map { it[1] }
+        .toSortedList()
+        .map { [ [ "model":"colabfold"], it ] }
+        .set { ch_multiqc_report  }
 
     emit:
-    pdb = COLABFOLD_BATCH.out.pdb // channel: /path/to/*.pdb
-    main_pdb = COLABFOLD_BATCH.out.main_pdb // channel: /path/to/*.pdb
-    msa = COLABFOLD_BATCH.out.msa // channel: /path/to/*_coverage.png
-    multiqc_report = COLABFOLD_BATCH.out.multiqc.map{it[1]}.flatten().toList().map{[["model":"colabfold"], it]} // channel: /path/to/multiqc_report.html
-    versions       = ch_versions       // channel: [ path(versions.yml) ]
+    top_ranked_pdb = COLABFOLD_BATCH.out.top_ranked_pdb // channel: /path/to/*.pdb
+    pdb            = COLABFOLD_BATCH.out.pdb            // channel: /path/to/*.pdb    
+    msa            = COLABFOLD_BATCH.out.msa            // channel: /path/to/*_coverage.png
+    multiqc_report = ch_multiqc_report                  // channel: /path/to/multiqc_report.html
+    versions       = ch_versions                        // channel: [ path(versions.yml) ]
 }
 
 /*

@@ -56,9 +56,17 @@ workflow ESMFOLD {
         ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
     }
 
+    RUN_ESMFOLD
+        .out
+        .multiqc
+        .map { it[1] }
+        .toSortedList()
+        .map { [ [ "model": "esmfold"], it ] }
+        .set { ch_multiqc_report  }
+
     emit:
-    pdb =            RUN_ESMFOLD.out.pdb // channel: /path/to/*pdb
-    multiqc_report = RUN_ESMFOLD.out.multiqc.map{it[1]}.toSortedList().map{[["model":"esmfold"], it]}  // channel: /path/to/multiqc_report.html
+    pdb            = RUN_ESMFOLD.out.pdb // channel: /path/to/*pdb
+    multiqc_report = ch_multiqc_report   // channel: /path/to/multiqc_report.html
     versions       = ch_versions         // channel: [ path(versions.yml) ]
 }
 
