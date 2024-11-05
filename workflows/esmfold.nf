@@ -29,6 +29,7 @@ workflow ESMFOLD {
     ch_versions       // channel: [ path(versions.yml) ]
     ch_esmfold_params // directory: /path/to/esmfold/params/
     ch_num_recycles   // int: Number of recycles for esmfold
+    ch_dummy_file     // channel: [ path(NO_FILE) ]
 
     main:
     ch_multiqc_files = Channel.empty()
@@ -55,6 +56,10 @@ workflow ESMFOLD {
         )
         ch_versions = ch_versions.mix(RUN_ESMFOLD.out.versions)
     }
+    
+    ch_report_input.filter{it[0]["model"] == "esmfold"}
+            .map{[it[0]["id"], it[0], it[1], it[2]]}
+            .set{ch_esmfold_out}
 
     RUN_ESMFOLD
         .out
@@ -64,8 +69,24 @@ workflow ESMFOLD {
         .map { [ [ "model": "esmfold"], it ] }
         .set { ch_multiqc_report  }
 
+    RUN_ESMFOLD
+        .out
+        .pdb
+        .combine(ch_dummy_file)
+        .map {
+            it[0]["model"] = "esmfold"
+            it
+        }
+        .set { ch_pdb_msa }
+    
+    ch_pdb_msa
+        .map { [ it[0]["id"], it[0], it[1], it[2] ] } //TODO do we need all of them (structure different to the other modes)
+        .set { ch_top_ranked_pdb }
+
     emit:
-    pdb            = RUN_ESMFOLD.out.pdb // channel: /path/to/*pdb
+    pdb_msa        = ch_pdb_msa          // channel: [ meta, /path/to/*.pdb, dummy_file ]
+    top_ranked_pdb = ch_top_ranked_pdb   // channel: //TODO update structure
+    // pdb            = RUN_ESMFOLD.out.pdb // channel: /path/to/*pdb    
     multiqc_report = ch_multiqc_report   // channel: /path/to/multiqc_report.html
     versions       = ch_versions         // channel: [ path(versions.yml) ]
 }

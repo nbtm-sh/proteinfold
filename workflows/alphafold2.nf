@@ -130,7 +130,6 @@ workflow ALPHAFOLD2 {
             RUN_ALPHAFOLD2_MSA.out.features
         )
 
-        // ch_multiqc_rep    = 
         RUN_ALPHAFOLD2_PRED
             .out
             .multiqc
@@ -139,16 +138,26 @@ workflow ALPHAFOLD2 {
             .map { [ [ "model": "alphafold2" ], it ] }
             .set { ch_multiqc_report }
 
-        ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
+        ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2_PRED.out.pdb)
         ch_msa            = ch_msa.mix(RUN_ALPHAFOLD2_PRED.out.msa)
         ch_versions       = ch_versions.mix(RUN_ALPHAFOLD2_PRED.out.versions)
     }
 
+    ch_top_ranked_pdb
+        .map { [ it[0]["id"], it[0], it[1] ] } // TODO think of passing just the map and not the id alone
+        .set { ch_top_ranked_pdb }
+
+    ch_pdb
+        .join(ch_msa)
+        .map { it[0]["model"] = "alphafold2"; it }
+        .set { ch_pdb_msa }
+
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: /path/to/*.pdb
-    pdb            = ch_pdb            // channel: /path/to/*.pdb
-    msa            = ch_msa            // channel: /path/to/*msa.tsv
+    // pdb            = ch_pdb            // channel: /path/to/*.pdb
+    // msa            = ch_msa            // channel: /path/to/*msa.tsv
+    pdb_msa        = ch_pdb_msa        // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }

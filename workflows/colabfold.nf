@@ -109,6 +109,28 @@ workflow COLABFOLD {
     
     COLABFOLD_BATCH
         .out
+        .top_ranked_pdb
+        .map { [ it[0]["id"], it[0], it[1] ] }
+        .join(
+            COLABFOLD_BATCH.out.msa
+                .map { [ it[0]["id"], it[1] ] }, 
+            remainder:true
+        )
+        .set { ch_top_ranked_pdb }
+
+    COLABFOLD_BATCH
+        .out
+        .pdb
+        .join(COLABFOLD_BATCH.out.msa)
+        //.view (assign instead meta, pdb, msa)
+        .map {
+            it[0]["model"] = "colabfold" 
+            it 
+        }
+        .set { ch_pdb_msa }
+
+    COLABFOLD_BATCH
+        .out
         .multiqc
         .map { it[1] }
         .toSortedList()
@@ -116,9 +138,10 @@ workflow COLABFOLD {
         .set { ch_multiqc_report  }
 
     emit:
-    top_ranked_pdb = COLABFOLD_BATCH.out.top_ranked_pdb // channel: /path/to/*.pdb
-    pdb            = COLABFOLD_BATCH.out.pdb            // channel: /path/to/*.pdb    
-    msa            = COLABFOLD_BATCH.out.msa            // channel: /path/to/*_coverage.png
+    top_ranked_pdb = ch_top_ranked_pdb // channel: /path/to/*.pdb
+    // pdb            = COLABFOLD_BATCH.out.pdb            // channel: /path/to/*.pdb    
+    // msa            = COLABFOLD_BATCH.out.msa            // channel: /path/to/*_coverage.png
+    pdb_msa        = ch_pdb_msa                         // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
     multiqc_report = ch_multiqc_report                  // channel: /path/to/multiqc_report.html
     versions       = ch_versions                        // channel: [ path(versions.yml) ]
 }
