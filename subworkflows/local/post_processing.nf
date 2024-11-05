@@ -20,6 +20,7 @@ workflow POST_PROCESSING {
 
     take:
     skip_visualisation
+    requested_modes
     requested_modes_size
     ch_report_input
     ch_report_template
@@ -73,12 +74,12 @@ workflow POST_PROCESSING {
             COMPARE_STRUCTURES(
                 ch_comparison_report_input
                     .map { 
-                        it[1][0]["models"] = params.mode.toLowerCase(); 
+                        it[1][0]["models"] = requested_modes.toLowerCase(); 
                         [ it[1][0], it[2] ]
                     },
                 ch_comparison_report_input
                     .map{
-                        it[1][0]["models"] = params.mode.toLowerCase(); 
+                        it[1][0]["models"] = requested_modes.mode.toLowerCase(); 
                         [ it[1][0], it[3] ]
                     },
                 ch_comparison_template
