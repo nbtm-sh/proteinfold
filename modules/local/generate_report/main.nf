@@ -14,10 +14,10 @@ process GENERATE_REPORT {
     path(template)
 
     output:
-    tuple val(meta), path ("*report.html"), emit: report
+    tuple val(meta), path ("*report.html")     , emit: report
     tuple val(meta), path ("*seq_coverage.png"), optional: true, emit: sequence_coverage
-    tuple val(meta), path ("*_LDDT.html"), emit: plddt
-    path "versions.yml"        , emit: versions
+    tuple val(meta), path ("*_LDDT.html")      , emit: plddt
+    path "versions.yml"                        , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
