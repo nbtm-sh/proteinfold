@@ -60,6 +60,16 @@ workflow ESMFOLD {
     ch_report_input.filter{it[0]["model"] == "esmfold"}
             .map{[it[0]["id"], it[0], it[1], it[2]]}
             .set{ch_esmfold_out}
+    
+    RUN_ESMFOLD
+        .out
+        .pdb
+        .combine(Channel.fromPath("$projectDir/assets/NO_FILE"))
+        .map {
+            it[0]["model"] = "esmfold"; 
+            [ it[0]["id"], it[0], it[1], it[2] ]
+        }
+        .set { ch_top_ranked_pdb }
 
     RUN_ESMFOLD
         .out
