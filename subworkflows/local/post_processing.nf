@@ -124,16 +124,18 @@ workflow POST_PROCESSING {
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-        // ch_multiqc_rep.view()
-        ch_multiqc_files.view()
-        ch_multiqc_rep
-                .combine(
-                    ch_multiqc_files
-                        .collect()
-                        .map { [it] }
-                )
-                .map { [ it[0], it[1] + it[2] ] }
-                .view()
+        ch_multiqc_rep.view()
+        // ch_multiqc_files.view()
+            // /nfs/scratch02/cn/jespinosa/colabfold_batch/tmp/25/b25d4bdd0d7147786e18b422a8fc36/methods_description_mqc.yaml
+            // /nfs/scratch02/cn/jespinosa/colabfold_batch/tmp/7d/0852a1333d2c3137523ac45c8b781a/workflow_summary_mqc.yaml
+        // ch_multiqc_rep
+        //         .combine(
+        //             ch_multiqc_files
+        //                 .collect()
+        //                 .map { [it] }
+        //         )
+        //         .map { [ it[0], it[1] + it[2] ] }
+        //         .view()
         MULTIQC (
             ch_multiqc_rep
                 .combine(
