@@ -124,7 +124,20 @@ workflow POST_PROCESSING {
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-        ch_multiqc_rep.view()
+        
+        ch_test = ch_multiqc_rep
+            .combine(
+                ch_multiqc_files
+                    .collect()
+                    .map { [it] }
+            )
+            .map { [ it[0], it[1] + it[2] ] }
+        ch_test.view()
+
+        // ch_multiqc_rep.view()
+            // [[model:colabfold], 
+            // [[/nfs/scratch02/cn/jespinosa/colabfold_batch/25/c494f54f03f707e3582987b4f0ec45/T1024_LmrP____408_residues__coverage_mqc.png, /nfs/scratch02/cn/jespinosa/colabfold_batch/25/c494f54f03f707e3582987b4f0ec45/T1024_LmrP____408_residues__pae_mqc.png, /nfs/scratch02/cn/jespinosa/colabfold_batch/25/c494f54f03f707e3582987b4f0ec45/T1024_LmrP____408_residues__plddt_mqc.png], [/nfs/scratch02/cn/jespinosa/colabfold_batch/aa/b464e7512e77e2880acb6c55c83107/T1026_FBNSV____172_residues__coverage_mqc.png, /nfs/scratch02/cn/jespinosa/colabfold_batch/aa/b464e7512e77e2880acb6c55c83107/T1026_FBNSV____172_residues__pae_mqc.png, /nfs/scratch02/cn/jespinosa/colabfold_batch/aa/b464e7512e77e2880acb6c55c83107/T1026_FBNSV____172_residues__plddt_mqc.png]]]
+
         // ch_multiqc_files.view()
             // /nfs/scratch02/cn/jespinosa/colabfold_batch/tmp/25/b25d4bdd0d7147786e18b422a8fc36/methods_description_mqc.yaml
             // /nfs/scratch02/cn/jespinosa/colabfold_batch/tmp/7d/0852a1333d2c3137523ac45c8b781a/workflow_summary_mqc.yaml
@@ -142,6 +155,7 @@ workflow POST_PROCESSING {
                     ch_multiqc_files
                         .collect()
                         .map { [it] }
+                        .flatten()
                 )
                 .map { [ it[0], it[1] + it[2] ] },
             ch_multiqc_config,
