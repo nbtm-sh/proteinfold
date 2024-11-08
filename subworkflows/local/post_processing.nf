@@ -147,7 +147,7 @@ workflow POST_PROCESSING {
                     .collect()
                     .map { [it] }
             )
-            .map { [ it[1] + it[2] + it[3] ] }
+            .map { [ it[1] + it[2] ] }
         
         ch_test.view()
 
