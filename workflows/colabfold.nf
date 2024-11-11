@@ -122,7 +122,7 @@ workflow COLABFOLD {
         .out
         .pdb
         .join(COLABFOLD_BATCH.out.msa)
-        //.view (assign instead meta, pdb, msa)
+        //.view (assign instead meta, pdb, msa named in map instead of just it)
         .map {
             it[0]["model"] = "colabfold" 
             it 
@@ -134,14 +134,14 @@ workflow COLABFOLD {
         .multiqc
         .map { it[1] }
         .toSortedList()
-        .map { [ [ "model":"colabfold"], it ] }
+        .map { [ [ "model":"colabfold"], it.flatten() ] }
         .set { ch_multiqc_report  }
     
     COLABFOLD_BATCH
         .out
         .multiqc
         .view()
-        
+
     ch_multiqc_report.view()
     COLABFOLD_BATCH
         .out

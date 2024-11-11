@@ -84,7 +84,7 @@ workflow ALPHAFOLD2 {
             .multiqc
             .map { it[1] }
             .toSortedList()
-            .map { [ [ "model": "alphafold2" ], it ] }
+            .map { [ [ "model": "alphafold2" ], it.flatten() ] }
             .set { ch_multiqc_report }
 
         ch_pdb            = ch_pdb.mix(RUN_ALPHAFOLD2.out.pdb)
@@ -135,7 +135,7 @@ workflow ALPHAFOLD2 {
             .multiqc
             .map { it[1] }
             .toSortedList()
-            .map { [ [ "model": "alphafold2" ], it ] }
+            .map { [ [ "model": "alphafold2" ], it.flatten() ] }
             .set { ch_multiqc_report }
 
         ch_top_ranked_pdb = ch_top_ranked_pdb.mix(RUN_ALPHAFOLD2_PRED.out.top_ranked_pdb)
