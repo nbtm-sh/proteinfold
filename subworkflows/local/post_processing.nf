@@ -141,19 +141,19 @@ workflow POST_PROCESSING {
         // ch_multiqc_files.view()
             // /nfs/scratch02/cn/jespinosa/colabfold_batch/tmp/25/b25d4bdd0d7147786e18b422a8fc36/methods_description_mqc.yaml
             // /nfs/scratch02/cn/jespinosa/colabfold_batch/tmp/7d/0852a1333d2c3137523ac45c8b781a/workflow_summary_mqc.yaml
-        ch_test = ch_multiqc_rep
-                    .map { 
-                        [ it[0], it[1] ] 
-                    }
-                    .collect()
-                    .combine(
-                        ch_multiqc_files
-                            .collect()
-                            .map { [it] }
-                    )
-                    .map { [ it[1] + it[2] + it[3] ] }
+        // ch_test = ch_multiqc_rep
+        //             // .map { 
+        //             //     [ it[0], it[1] ] 
+        //             // }
+        //             // .collect()
+        //             .combine(
+        //                 ch_multiqc_files
+        //                     .collect()
+        //                     .map { [it] }
+        //             )
+        //             .map { [ it[1] + it[2] + it[3] ] }
                 
-        ch_test.view()
+        // ch_test.view()
 
         MULTIQC (
             ch_test,

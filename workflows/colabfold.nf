@@ -136,6 +136,18 @@ workflow COLABFOLD {
         .toSortedList()
         .map { [ [ "model":"colabfold"], it ] }
         .set { ch_multiqc_report  }
+    
+    COLABFOLD_BATCH
+        .out
+        .multiqc
+        .view()
+        
+    ch_multiqc_report.view()
+    COLABFOLD_BATCH
+        .out
+        .multiqc
+        .collect()
+        .view()
 
     emit:
     top_ranked_pdb = ch_top_ranked_pdb // channel: /path/to/*.pdb
