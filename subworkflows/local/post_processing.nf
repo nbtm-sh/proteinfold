@@ -70,7 +70,6 @@ workflow POST_PROCESSING {
             ch_comparison_report_files
                 .groupTuple(by: [0], size: requested_modes_size)
                 .set { ch_comparison_report_input }
-            requested_modes.view()
 
             COMPARE_STRUCTURES(
                 ch_comparison_report_input
