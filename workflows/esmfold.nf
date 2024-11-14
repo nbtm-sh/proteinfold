@@ -62,7 +62,7 @@ workflow ESMFOLD {
         .pdb
         .combine(ch_dummy_file)
         .map {
-            it[0]["model"] = "esmfold" 
+            it[0]["model"] = "esmfold"
             [ it[0]["id"], it[0], it[1], it[2] ]
         }
         .set { ch_top_ranked_pdb }
@@ -84,7 +84,7 @@ workflow ESMFOLD {
             it
         }
         .set { ch_pdb_msa }
-    
+
     ch_pdb_msa
         .map { [ it[0]["id"], it[0], it[1], it[2] ] }
         .set { ch_top_ranked_pdb }

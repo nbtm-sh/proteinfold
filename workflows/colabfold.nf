@@ -106,14 +106,16 @@ workflow COLABFOLD {
         )
         ch_versions    = ch_versions.mix(COLABFOLD_BATCH.out.versions)
     }
-    
+
     COLABFOLD_BATCH
         .out
         .top_ranked_pdb
         .map { [ it[0]["id"], it[0], it[1] ] }
         .join(
-            COLABFOLD_BATCH.out.msa
-                .map { [ it[0]["id"], it[1] ] }, 
+            COLABFOLD_BATCH
+                .out
+                .msa
+                .map { [ it[0]["id"], it[1] ] },
             remainder:true
         )
         .set { ch_top_ranked_pdb }
@@ -123,8 +125,8 @@ workflow COLABFOLD {
         .pdb
         .join(COLABFOLD_BATCH.out.msa)
         .map {
-            it[0]["model"] = "colabfold" 
-            it 
+            it[0]["model"] = "colabfold"
+            it
         }
         .set { ch_pdb_msa }
 
@@ -135,7 +137,7 @@ workflow COLABFOLD {
         .toSortedList()
         .map { [ [ "model":"colabfold"], it.flatten() ] }
         .set { ch_multiqc_report  }
-    
+
     COLABFOLD_BATCH
         .out
         .multiqc

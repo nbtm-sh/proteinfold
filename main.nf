@@ -56,7 +56,7 @@ params.colabfold_alphafold2_params_path = getColabfoldAlphafold2ParamsPath()
 ch_dummy_file = Channel.fromPath("$projectDir/assets/NO_FILE")
 
 workflow NFCORE_PROTEINFOLD {
-    
+
     take:
     samplesheet // channel: samplesheet read in from --input
 
@@ -210,7 +210,7 @@ workflow NFCORE_PROTEINFOLD {
     //
     // TODO: we need to validate the rest of foldseek parameters if foldseek is set to run
     // TODO: maybe create a parameter that is run_foldseek or skip_foldsee instead as there are no more mode than can be use now
-    
+
     // TODO move it to pdb.config? asign as in prepare dbs
     if (params.foldseek_search == "easysearch"){
         ch_foldseek_db = channel.value([
@@ -221,7 +221,7 @@ workflow NFCORE_PROTEINFOLD {
         ])
     }
 
-    ch_multiqc_config        = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first() 
+    ch_multiqc_config        = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true).first()
     ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath( params.multiqc_config ).first()  : Channel.empty()
     ch_multiqc_logo          = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo ).first()    : Channel.empty()
     ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)

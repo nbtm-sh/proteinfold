@@ -73,13 +73,13 @@ workflow POST_PROCESSING {
 
             COMPARE_STRUCTURES(
                 ch_comparison_report_input
-                    .map { 
-                        it[1][0]["models"] = requested_modes.toLowerCase(); 
+                    .map {
+                        it[1][0]["models"] = requested_modes.toLowerCase();
                         [ it[1][0], it[2] ]
                     },
                 ch_comparison_report_input
                     .map{
-                        it[1][0]["models"] = requested_modes.toLowerCase(); 
+                        it[1][0]["models"] = requested_modes.toLowerCase();
                         [ it[1][0], it[3] ]
                     },
                 ch_comparison_template

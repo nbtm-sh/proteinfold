@@ -150,9 +150,9 @@ workflow ALPHAFOLD2 {
 
     ch_pdb
         .join(ch_msa)
-        .map { 
+        .map {
             it[0]["model"] = "alphafold2"
-            it 
+            it
         }
         .set { ch_pdb_msa }
 
