@@ -122,7 +122,6 @@ workflow COLABFOLD {
         .out
         .pdb
         .join(COLABFOLD_BATCH.out.msa)
-        //.view (assign instead meta, pdb, msa named in map instead of just it)
         .map {
             it[0]["model"] = "colabfold" 
             it 
@@ -140,22 +139,17 @@ workflow COLABFOLD {
     COLABFOLD_BATCH
         .out
         .multiqc
-        .view()
 
-    ch_multiqc_report.view()
     COLABFOLD_BATCH
         .out
         .multiqc
         .collect()
-        .view()
 
     emit:
-    top_ranked_pdb = ch_top_ranked_pdb // channel: /path/to/*.pdb
-    // pdb            = COLABFOLD_BATCH.out.pdb            // channel: /path/to/*.pdb    
-    // msa            = COLABFOLD_BATCH.out.msa            // channel: /path/to/*_coverage.png
-    pdb_msa        = ch_pdb_msa                         // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
-    multiqc_report = ch_multiqc_report                  // channel: /path/to/multiqc_report.html
-    versions       = ch_versions                        // channel: [ path(versions.yml) ]
+    top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, /path/to/*.pdb ]
+    pdb_msa        = ch_pdb_msa        // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
+    multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
+    versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
 
 /*

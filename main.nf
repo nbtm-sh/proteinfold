@@ -117,8 +117,8 @@ workflow NFCORE_PROTEINFOLD {
             params.alphafold2_mode,
             params.alphafold2_model_preset,
             PREPARE_ALPHAFOLD2_DBS.out.params,
-            PREPARE_ALPHAFOLD2_DBS.out.bfd.ifEmpty([]).first(),
-            PREPARE_ALPHAFOLD2_DBS.out.small_bfd.ifEmpty([]).first(),
+            PREPARE_ALPHAFOLD2_DBS.out.bfd.first().ifEmpty([]),
+            PREPARE_ALPHAFOLD2_DBS.out.small_bfd.first().ifEmpty([]),
             PREPARE_ALPHAFOLD2_DBS.out.mgnify,
             PREPARE_ALPHAFOLD2_DBS.out.pdb70,
             PREPARE_ALPHAFOLD2_DBS.out.pdb_mmcif,
@@ -131,17 +131,6 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc                  = ch_multiqc.mix(ALPHAFOLD2.out.multiqc_report.collect())
         ch_versions                 = ch_versions.mix(ALPHAFOLD2.out.versions)
         ch_report_input             = ch_report_input.mix(ALPHAFOLD2.out.pdb_msa)
-            // ALPHAFOLD2
-            //     .out
-            //     .pdb
-            //     .join(ALPHAFOLD2.out.msa)
-            //     .map { it[0]["model"] = "alphafold2"; it }
-            // )
-        // ALPHAFOLD2
-        //     .out
-        //     .top_ranked_pdb
-        //     .map { [ it[0]["id"], it[0], it[1] ] }
-        //     .set { ch_alphafold2_out }
     }
 
     //
@@ -181,20 +170,6 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc                  = ch_multiqc.mix(COLABFOLD.out.multiqc_report)
         ch_versions                 = ch_versions.mix(COLABFOLD.out.versions)
         ch_report_input             = ch_report_input.mix(COLABFOLD.out.pdb_msa)
-            // COLABFOLD
-            //     .out
-            //     .pdb
-            //     .join(COLABFOLD.out.msa)
-            //     .map { it[0]["model"] = "colabfold"; it }
-            // )
-        // COLABFOLD
-        //         .out
-        //         .top_ranked_pdb
-        //         .map{[it[0]["id"], it[0], it[1]]}
-        //         .join(COLABFOLD.out.msa
-        //                 .map{[it[0]["id"], it[1]]},
-        //             remainder:true
-        //         ).set{ch_colabfold_out}
     }
 
     //
@@ -228,19 +203,6 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc                = ch_multiqc.mix(ESMFOLD.out.multiqc_report.collect())
         ch_versions               = ch_versions.mix(ESMFOLD.out.versions)
         ch_report_input           = ch_report_input.mix(ESMFOLD.out.pdb_msa)
-            // ESMFOLD
-            //     .out
-            //     .pdb
-            //     .combine(ch_dummy_file)
-            //     .map {
-            //         it[0]["model"] = "esmfold"
-            //         it
-            //     }
-        // )
-        // 
-        // ch_report_input.filter{it[0]["model"] == "esmfold"}
-        //     .map{[it[0]["id"], it[0], it[1], it[2]]}
-        //     .set{ch_esmfold_out}
     }
 
     //
@@ -263,16 +225,6 @@ workflow NFCORE_PROTEINFOLD {
     ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath( params.multiqc_config ).first()  : Channel.empty()
     ch_multiqc_logo          = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo ).first()    : Channel.empty()
     ch_multiqc_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-    //tendria que incluir la funcion aqui! 
-    // quizá todo tendría que ir a post_processing incluido lo de arriba!
-    // ch_multiqc_methods_description = Channel.value(
-    //         methodsDescriptionText(
-    //             params.multiqc_methods_description
-    //                 ? file(params.multiqc_methods_description)
-    //                 : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-    //         )
-    //     ).collectFile(name: 'methods_description_mqc.yaml')
-
     ch_report_template     = Channel.value(file("$projectDir/assets/report_template.html", checkIfExists: true))
     ch_comparison_template = Channel.value(file("$projectDir/assets/comparison_template.html", checkIfExists: true))
 

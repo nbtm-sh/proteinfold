@@ -145,18 +145,19 @@ workflow ALPHAFOLD2 {
     }
 
     ch_top_ranked_pdb
-        .map { [ it[0]["id"], it[0], it[1] ] } // TODO think of passing just the map and not the id alone
+        .map { [ it[0]["id"], it[0], it[1] ] }
         .set { ch_top_ranked_pdb }
 
     ch_pdb
         .join(ch_msa)
-        .map { it[0]["model"] = "alphafold2"; it }
+        .map { 
+            it[0]["model"] = "alphafold2"
+            it 
+        }
         .set { ch_pdb_msa }
 
     emit:
-    top_ranked_pdb = ch_top_ranked_pdb // channel: /path/to/*.pdb
-    // pdb            = ch_pdb            // channel: /path/to/*.pdb
-    // msa            = ch_msa            // channel: /path/to/*msa.tsv
+    top_ranked_pdb = ch_top_ranked_pdb // channel: [ id, /path/to/*.pdb ]
     pdb_msa        = ch_pdb_msa        // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
