@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [[#179](https://github.com/nf-core/proteinfold/issues/179)]- Produce an interactive html report for the predicted structures.
 - [[#180](https://github.com/nf-core/proteinfold/issues/180)]- Implement Fooldseek.
 - [[#188](https://github.com/nf-core/proteinfold/issues/188)]- Fix colabfold image to run in gpus.
+- [[#214](https://github.com/nf-core/proteinfold/issues/214)]- Fix colabfold image to run in cpus after [#188](https://github.com/nf-core/proteinfold/issues/188) fix.
 
 ## [[1.1.1](https://github.com/nf-core/proteinfold/releases/tag/1.1.1)] - 2025-07-30
 
