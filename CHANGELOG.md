@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Enhancements & fixes
 
-- [[PR #175](https://github.com/nf-core/proteinfold/pull/175)] - Fix typo in some instances of model preset `alphafold2_ptm`.
+- [[#177](https://github.com/nf-core/proteinfold/issues/177)]- Fix typo in some instances of model preset `alphafold2_ptm`.
+- [[PR #178](https://github.com/nf-core/proteinfold/pull/178)] - Enable running multiple modes in parallel.
+- [[#179](https://github.com/nf-core/proteinfold/issues/179)]- Produce an interactive html report for the predicted structures.
+- [[#180](https://github.com/nf-core/proteinfold/issues/180)]- Implement Fooldseek.
+- [[#188](https://github.com/nf-core/proteinfold/issues/188)]- Fix colabfold image to run in gpus.
 
 ## [[1.1.1](https://github.com/nf-core/proteinfold/releases/tag/1.1.1)] - 2025-07-30
 
@@ -68,6 +72,7 @@ Thank you to everyone else that has contributed by reporting bugs, enhancements 
 - [[PR ##163](https://github.com/nf-core/proteinfold/pull/163)] - Fix full test CI.
 - [[#150]](https://github.com/nf-core/proteinfold/issues/150)] - Add thanks to the AWS Open Data Sponsorship program in `README.md`.
 - [[PR ##166](https://github.com/nf-core/proteinfold/pull/166)] - Create 2 different parameters for Colabfold and ESMfold number of recycles.
+- [[PR ##205](https://github.com/nf-core/proteinfold/pull/205)] - Change input schema from `sequence,fasta` to `id,fasta`.
 
 ### Parameters
 
