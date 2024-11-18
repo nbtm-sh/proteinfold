@@ -42,7 +42,7 @@
                 },
                 "split_fasta": {
                     "type": "boolean",
-                    "description": "Split input fasta file in multiple fasta files each of them containing one sequence to be folded",
+                    "description": "Split input multi-fasta file in separated fasta files each of them containing one sequence to be folded",
                     "fa_icon": "fas fa-microchip"
                 },
                 "email": {
