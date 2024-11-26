@@ -74,13 +74,16 @@ workflow PIPELINE_INITIALISATION {
         }
 
         // Split the fasta file into individual files for each sequence
-        ch_samplesheet.map{ meta,fasta -> fasta}
-                        .splitFasta( record: [header: true, sequence: true] )
-                        .collectFile { item ->
-                            [ "${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
-                        }.map{
-                            file -> [[id: file.baseName], file]
-                        }.set{ch_samplesheet}
+        ch_samplesheet
+            .map { meta,fasta -> fasta }
+            .splitFasta( record: [header: true, sequence: true] )
+            .collectFile { item ->
+                [ "${cleanHeader(item["header"])}.fa", ">" + cleanHeader(item["header"]) + '\n' +item["sequence"] ]
+            }
+            .map {
+                file -> [[id: file.baseName], file]
+            }
+            .set { ch_samplesheet }
     }
 
     emit:
