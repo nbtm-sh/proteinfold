@@ -67,7 +67,7 @@ workflow PIPELINE_INITIALISATION {
     //
     ch_samplesheet = Channel.fromList(samplesheetToList(params.input, "assets/schema_input.json"))
     if (params.split_fasta) {
-        // here we have to validate that the ids are unique and valid as an extra step
+        // TODO: here we have to validate that the ids are unique and valid as an extra step
         // since it is not done with the samplesheet schema (they are all in the same file)
         ch_samplesheet.map { meta, fasta ->
             validateFasta(fasta)
