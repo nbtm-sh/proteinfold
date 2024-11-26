@@ -23,7 +23,7 @@ The directories listed below will be created in the output directory after the p
 <details markdown="1">
 <summary>Output files</summary>
 
-- `alphafold2_standard/` or `alphafold2_split_msa_prediction/` based on the selected mode. It contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings. Specifically, `<SEQUENCE NAME>_plddt_mqc.tsv` presents the pLDDT scores per residue for each of the 5 predicted models.
+- `alphafold2/standard/` or `alphafold2/split_msa_prediction/` based on the selected mode. It contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings. Specifically, `<SEQUENCE NAME>_plddt_mqc.tsv` presents the pLDDT scores per residue for each of the 5 predicted models.
   - `top_ranked_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
 - `DBs/` that contains symbolic links to the downloaded database and parameter files
 
@@ -89,8 +89,8 @@ Below you can find an indicative example of the TSV file with the pLDDT scores p
 <details markdown="1">
 <summary>Output files</summary>
 
-- `colabfold_webserver/` or `colabfold_local/` based on the selected mode. Contain the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings. Specifically, `<SEQUENCE NAME>_plddt_mqc.tsv` presents the pLDDT scores per residue for each of the 5 predicted models.
-  - `best_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
+- `colabfold/webserver/` or `colabfold/local/` based on the selected mode. Contain the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings. Specifically, `<SEQUENCE NAME>_plddt_mqc.tsv` presents the pLDDT scores per residue for each of the 5 predicted models.
+  - `top_ranked_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
 - `DBs/` that contains symbolic links to the downloaded database and parameter files
 
 </details>
@@ -114,9 +114,9 @@ Below you can find some indicative examples of the output images produced by Col
 <details markdown="1">
 <summary>Output files</summary>
 
-- `esmfold/`
+- `esmfold/default`
   contains the predicted structures.
-  - `best_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
+  - `top_ranked_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
 - `DBs/` that contains symbolic links to the downloaded database and parameter files
 
 </details>
