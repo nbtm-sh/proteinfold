@@ -89,7 +89,7 @@ Below you can find an indicative example of the TSV file with the pLDDT scores p
 <details markdown="1">
 <summary>Output files</summary>
 
-- `colabfold/webserver/` or `colabfold/local/` based on the selected mode. Contain the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings. Specifically, `<SEQUENCE NAME>_plddt_mqc.tsv` presents the pLDDT scores per residue for each of the 5 predicted models.
+- `colabfold/webserver/` or `colabfold/local/` based on the selected mode. It contains the computed MSAs, unrelaxed structures, relaxed structures, ranked structures, raw model outputs, prediction metadata, and section timings. Specifically, `<SEQUENCE NAME>_plddt_mqc.tsv` presents the pLDDT scores per residue for each of the 5 predicted models.
   - `top_ranked_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
 - `DBs/` that contains symbolic links to the downloaded database and parameter files
 
