@@ -115,7 +115,7 @@ Below you can find some indicative examples of the output images produced by Col
 <summary>Output files</summary>
 
 - `esmfold/default`
-  contains the predicted structures.
+  contains the predicted structures. Specifically, `<SEQUENCE NAME>_plddt_mqc.tsv` presents the pLDDT scores per residue for each of the predicted models.
   - `top_ranked_structures/<SEQUENCE NAME>.pdb` that is the structure with the highest pLDDT score per input (ranked first)
 - `DBs/` that contains symbolic links to the downloaded database and parameter files
 
