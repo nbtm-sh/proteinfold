@@ -27,6 +27,10 @@ if (params.mode.toLowerCase().split(",").contains("esmfold")) {
     include { PREPARE_ESMFOLD_DBS } from './subworkflows/local/prepare_esmfold_dbs'
     include { ESMFOLD             } from './workflows/esmfold'
 }
+if (params.mode.toLowerCase().split(",").contains("boltz")) {
+    include { PREPARE_BOLTZ_DBS } from './subworkflows/local/prepare_boltz_dbs'
+    include { BOLTZ } from './workflows/boltz'
+}
 
 include { PIPELINE_INITIALISATION          } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
 include { PIPELINE_COMPLETION              } from './subworkflows/local/utils_nfcore_proteinfold_pipeline'
@@ -203,6 +207,37 @@ workflow NFCORE_PROTEINFOLD {
         ch_multiqc                = ch_multiqc.mix(ESMFOLD.out.multiqc_report.collect())
         ch_versions               = ch_versions.mix(ESMFOLD.out.versions)
         ch_report_input           = ch_report_input.mix(ESMFOLD.out.pdb_msa)
+    }
+
+    //
+    // WORKFLOW: Run Boltz
+    //
+    if (params.mode.toLowerCase().split(",").contains("boltz")) {
+        PREPARE_BOLTZ_DBS(
+            params.boltz_ccd_path,
+            params.boltz_model_path,
+            params.boltz_ccd_link,
+            params.boltz_model_link
+        )
+        ch_versions = ch_versions.mix(PREPARE_BOLTZ_DBS.out.versions)
+
+        BOLTZ(
+            ch_samplesheet,
+            ch_versions,
+            PREPARE_BOLTZ_DBS.out.boltz_ccd,
+            PREPARE_BOLTZ_DBS.out.boltz_model
+        )
+        ch_versions = ch_versions.mix(BOLTZ.out.versions)
+        ch_report_input = ch_report_input.mix(
+            BOLTZ
+                .out
+                .msa
+                .join(BOLTZ.out.structures)
+                .join(BOLTZ.out.confidence)
+                .join(BOLTZ.out.plddt)
+                .map { it[0]["model"] = "boltz"; it }
+        )
+
     }
 
     //
