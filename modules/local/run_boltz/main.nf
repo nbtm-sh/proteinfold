@@ -5,7 +5,7 @@ process RUN_BOLTZ {
     tag "$meta.id"
     label 'process_medium'
 
-    container "/home/z3545907/boltz_apptainer/boltz.sif"
+    container "docker.io/nbtmsh/boltz:0.1.2"
     
     input:
     tuple val(meta), path(fasta)
