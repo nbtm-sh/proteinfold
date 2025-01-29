@@ -2,7 +2,7 @@ process CREATE_SAMPLESHEET_YAML {
     tag "$meta.id"
     label 'process_single'
 
-    container 'docker://nbtmsh/samplesheet-utils'
+    container 'docker://nbtmsh/samplesheet-utils:1.0'
 
     input:
     tuple val(meta), path(samplesheet)
@@ -26,4 +26,5 @@ process CREATE_SAMPLESHEET_YAML {
     echo "" > samplesheet.yaml
     """
 }
+
 

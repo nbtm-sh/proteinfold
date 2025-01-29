@@ -28,6 +28,7 @@ if (params.mode.toLowerCase().split(",").contains("esmfold")) {
     include { ESMFOLD             } from './workflows/esmfold'
 }
 if (params.mode.toLowerCase().split(",").contains("boltz")) {
+    include { PREPARE_COLABFOLD_DBS } from './subworkflows/local/prepare_colabfold_dbs'
     include { PREPARE_BOLTZ_DBS } from './subworkflows/local/prepare_boltz_dbs'
     include { BOLTZ } from './workflows/boltz'
 }
@@ -221,11 +222,28 @@ workflow NFCORE_PROTEINFOLD {
         )
         ch_versions = ch_versions.mix(PREPARE_BOLTZ_DBS.out.versions)
 
+        PREPARE_COLABFOLD_DBS (
+            params.colabfold_db,
+            params.colabfold_server,
+            params.colabfold_alphafold2_params_path,
+            params.colabfold_db_path,
+            params.uniref30_colabfold_path,
+            params.colabfold_alphafold2_params_link,
+            params.colabfold_db_link,
+            params.uniref30_colabfold_link,
+            params.create_colabfold_index
+        )
+        ch_versions = ch_versions.mix(PREPARE_COLABFOLD_DBS.out.versions)
+
         BOLTZ(
             ch_samplesheet,
             ch_versions,
             PREPARE_BOLTZ_DBS.out.boltz_ccd,
-            PREPARE_BOLTZ_DBS.out.boltz_model
+            PREPARE_BOLTZ_DBS.out.boltz_model,
+            PREPARE_COLABFOLD_DBS.out.colabfold_db,
+            PREPARE_COLABFOLD_DBS.out.uniref30,
+            params.num_recycles_colabfold
+
         )
         ch_versions = ch_versions.mix(BOLTZ.out.versions)
         ch_report_input = ch_report_input.mix(

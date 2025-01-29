@@ -19,6 +19,8 @@
 //
 include { MULTIQC } from '../modules/nf-core/multiqc/main'
 include { CREATE_SAMPLESHEET_YAML } from '../modules/local/create_samplesheet'
+include { CREATE_SAMPLESHEET_YAML_MSA } from '../modules/local/create_samplesheet_msa'
+include { MMSEQS_COLABFOLDSEARCH } from '../modules/local/mmseqs_colabfoldsearch'
 
 //
 // SUBWORKFLOW: Consisting entirely of nf-core/modules
@@ -46,13 +48,26 @@ workflow BOLTZ {
     ch_versions     // channel: [ path(versions.yml) ]
     ch_boltz_ccd    // channel: [ path(boltz_ccd) ]
     ch_boltz_model  // channel: [ path(model) ]
+    ch_colabfold_params // channel: [ path(colabfold_params) ]
+    ch_colabfold_db // channel: [ path(colabfold_db) ]
+    ch_uniref30     // channel: [ path(uniref30) ]
 
     main:
     ch_multiqc_files = Channel.empty()
-    // CREATE_SAMPLESHEET_YAML
-    CREATE_SAMPLESHEET_YAML(
-        ch_samplesheet
+    // MMSEQS_COLABFOLDSEARCH
+    MMSEQS_COLABFOLDSEARCH (
+        ch_samplesheet,
+        ch_colabfold_params,
+        ch_colabfold_db,
+        ch_uniref30
     )
+
+    // CREATE_SAMPLESHEET_YAML
+    CREATE_SAMPLESHEET_YAML_MSA(
+        ch_samplesheet,
+        MMSEQS_COLABFOLDSEARCH.out.a3m
+    )
+        //MMSEQS_COLABFOLDSEARCH.out.a3m
 
     // RUN_BOLTZ 
     RUN_BOLTZ(
