@@ -71,7 +71,7 @@ workflow BOLTZ {
 
     // RUN_BOLTZ 
     RUN_BOLTZ(
-        CREATE_SAMPLESHEET_YAML.out.samplesheet,
+        CREATE_SAMPLESHEET_YAML_MSA.out.samplesheet,
         ch_boltz_model,
         ch_boltz_ccd
     )
