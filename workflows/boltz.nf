@@ -64,7 +64,7 @@ workflow BOLTZ {
 
     // CREATE_SAMPLESHEET_YAML
     CREATE_SAMPLESHEET_YAML_MSA(
-        ch_samplesheet,
+        MMSEQS_COLABFOLDSEARCH.out.ch_samplesheet,
         MMSEQS_COLABFOLDSEARCH.out.a3m
     )
         //MMSEQS_COLABFOLDSEARCH.out.a3m
