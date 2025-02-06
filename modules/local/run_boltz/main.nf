@@ -5,7 +5,7 @@ process RUN_BOLTZ {
     tag "$meta.id"
     label 'process_medium'
 
-    container "docker.io/nbtmsh/boltz:0.1.2"
+    container "/srv/scratch/sbf-pipelines/proteinfold/singularity/boltz.sif"
     
     input:
     tuple val(meta), path(fasta)
