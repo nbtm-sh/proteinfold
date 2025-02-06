@@ -20,6 +20,6 @@ process RUN_BOLTZ {
     
     script:
     """
-    /opt/miniforge/envs/boltz/bin/boltz predict --use_msa_server --accelerator gpu "./${fasta.name}" --cache ./
+    boltz predict --use_msa_server "./${fasta.name}" --cache ./
     """
 }
