@@ -34,6 +34,7 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_prot
 // MODULE: Boltz
 //
 include { RUN_BOLTZ } from '../modules/local/run_boltz'
+include { RUN_BOLTZ_MSA } from '../modules/local/run_boltz_msa'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
