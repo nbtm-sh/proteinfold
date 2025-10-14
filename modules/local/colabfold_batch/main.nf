@@ -18,6 +18,7 @@ process COLABFOLD_BATCH {
     tuple val(meta), path ("*relaxed_rank_*.pdb")     , emit: pdb
     tuple val(meta), path ("*_coverage.png")          , emit: msa
     tuple val(meta), path ("*_mqc.png")               , emit: multiqc
+    tuple val(meta), path ("${meta.id}_0_pae.tsv")    , emit: pae
     path "versions.yml"                               , emit: versions
 
     when:
@@ -29,10 +30,11 @@ process COLABFOLD_BATCH {
         error("Local COLABFOLD_BATCH module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
     def args = task.ext.args ?: ''
-    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
 
     """
-    ln -r -s params/alphafold_params_*/* params/
+    ln -s \$(realpath params/alphafold_params_*/*) params/
+    touch params/download_finished.txt
+
     colabfold_batch \\
         $args \\
         --num-recycle ${numRec} \\
@@ -47,14 +49,19 @@ process COLABFOLD_BATCH {
         cp *_unrelaxed_rank_001*.pdb ${meta.id}_colabfold.pdb
     fi
 
+    #Note: only multimer prefix is meta.id
+    extract_metrics.py --name ${meta.id} \\
+        --colabfold_pae *_predicted_aligned_error_v1.json
+
+    mv *_coverage.png ${meta.id}_seq_coverage.png
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: $VERSION
+        colabfold_batch: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
     END_VERSIONS
     """
 
     stub:
-    def VERSION = '1.5.2' // WARN: Version information not provided by tool on CLI. Please update this string when bumping container versions.
     """
     touch ./"${meta.id}"_colabfold.pdb
     touch ./"${meta.id}"_mqc.png
@@ -63,10 +70,11 @@ process COLABFOLD_BATCH {
     touch ./${meta.id}_relaxed_rank_03.pdb
     touch ./${meta.id}_coverage.png
     touch ./${meta.id}_scores_rank.json
+    touch ./${meta.id}_0_pae.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        colabfold_batch: $VERSION
+        colabfold_batch: \$(conda run -n colabfold pip list | grep "^colabfold" | awk '{print \$2}')
     END_VERSIONS
     """
 }

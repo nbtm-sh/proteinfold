@@ -25,16 +25,17 @@ process RUN_HELIXFOLD3 {
     path ('maxit_src')
 
     output:
-    tuple val(meta), path ("${meta.id}_helixfold3.pdb") , emit: top_ranked_pdb
-    tuple val(meta), path ("${meta.id}_helixfold3.cif") , emit: main_cif
-    tuple val(meta), path ("${meta.id}-ranked*.pdb")    , emit: pdb
-    tuple val(meta), path ("${meta.id}_plddt.tsv")      , emit: multiqc
-    tuple val(meta), path ("${meta.id}_msa.tsv")        , emit: msa
+    tuple val(meta), path ("${meta.id}_helixfold3.pdb")     , emit: top_ranked_pdb
+    tuple val(meta), path ("${meta.id}_helixfold3.cif")     , emit: main_cif
+    tuple val(meta), path ("${meta.id}-ranked*.pdb")        , emit: pdb
+    tuple val(meta), path ("${meta.id}_plddt.tsv")          , emit: multiqc
+    tuple val(meta), path ("${meta.id}_helixfold3_msa.tsv") , emit: msa
     // If ${meta.id}-rank*/all_results.json" doesn't have PAE vales in the key, this will be empty
-    tuple val(meta), path ("${meta.id}_*_pae.tsv") , emit: paes
-    tuple val(meta), path ("${meta.id}_ptm.tsv")        , emit: ptms
-    tuple val(meta), path ("${meta.id}_iptm.tsv")       , emit: iptms
-    path ("versions.yml")                               , emit: versions
+    tuple val(meta), path ("${meta.id}_1_pae.tsv")          , emit: pae
+    tuple val(meta), path ("${meta.id}_*_pae.tsv")          , emit: paes
+    tuple val(meta), path ("${meta.id}_ptm.tsv")            , emit: ptms
+    tuple val(meta), path ("${meta.id}_iptm.tsv")           , optional: true, emit: iptms
+    path ("versions.yml")                                   , emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -47,6 +48,7 @@ process RUN_HELIXFOLD3 {
     def args = task.ext.args ?: ''
     """
     init_model_path=\$(ls ./init_models/*.pdparams | head -n 1)
+    mgnify_db_path=\$(ls -v ./mgnify/mgy_clusters*.fa | tail -n 1)
 
     mamba run --name helixfold python3.9 /app/helixfold3/inference.py \\
         --maxit_binary "./maxit_src/bin/maxit" \\
@@ -67,7 +69,7 @@ process RUN_HELIXFOLD3 {
         --obsolete_pdbs_path="./obsolete.dat" \\
         --ccd_preprocessed_path="./ccd_preprocessed_etkdg.pkl.gz" \\
         --uniref90_database_path "./uniref90/uniref90.fasta" \\
-        --mgnify_database_path "./mgnify/mgy_clusters.fa" \\
+        --mgnify_database_path "\$mgnify_db_path" \\
         --input_json="${fasta}" \\
         --output_dir="\$PWD" \\
         --init_model "\$init_model_path" \\
@@ -84,8 +86,9 @@ process RUN_HELIXFOLD3 {
     [ ! -d ${meta.id} ] && mkdir ${meta.id}
     for i in 1 2 3 4 5; do
         cp "${fasta.baseName}/${fasta.baseName}-rank\$i/predicted_structure.pdb" "${meta.id}-ranked_\$i.pdb"
-
     done
+
+    mv "${meta.id}_msa.tsv" "${meta.id}_helixfold3_msa.tsv"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -98,7 +101,7 @@ process RUN_HELIXFOLD3 {
     touch "${meta.id}_helixfold3.cif"
     touch "${meta.id}_helixfold3.pdb"
     touch "${meta.id}_plddt.tsv"
-    touch "${meta.id}_msa.tsv"
+    touch "${meta.id}_helixfold3_msa.tsv"
     touch "${meta.id}_ptm.tsv"
     touch "${meta.id}_iptm.tsv"
     touch "${meta.id}_1_pae.tsv"

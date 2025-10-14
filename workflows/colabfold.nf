@@ -37,11 +37,12 @@ workflow COLABFOLD {
     main:
     ch_multiqc_report = Channel.empty()
 
-    if (params.colabfold_server == 'webserver') {
+    if (params.use_msa_server) {
         //
         // MODULE: Run colabfold
         //
-        if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
+        if (colabfold_model_preset != 'alphafold2_ptm' && colabfold_model_preset != 'alphafold2') {
+            //Multimer mode
             MULTIFASTA_TO_CSV(
                 ch_samplesheet
             )
@@ -67,11 +68,12 @@ workflow COLABFOLD {
             ch_versions = ch_versions.mix(COLABFOLD_BATCH.out.versions)
         }
 
-    } else if (params.colabfold_server == 'local') {
+    } else {
         //
         // MODULE: Run mmseqs
         //
         if (params.colabfold_model_preset != 'alphafold2_ptm' && params.colabfold_model_preset != 'alphafold2') {
+            //Multimer mode
             MULTIFASTA_TO_CSV(
                 ch_samplesheet
             )
@@ -115,25 +117,17 @@ workflow COLABFOLD {
         }
         .set { ch_top_ranked_pdb }
 
-    COLABFOLD_BATCH
-        .out
-        .pdb
-        .map{
-            meta = it[0].clone();
-            meta.model = "colabfold";
-            [meta, it[1]]
+    def colabfoldChannel = { ch ->
+        ch.map { meta, value ->
+            meta = meta.clone()
+            meta.model = "colabfold"
+            [meta, value]
         }
-        .set{ch_pdb_final}
+    }
 
-    COLABFOLD_BATCH
-        .out
-        .msa
-        .map{
-            meta = it[0].clone();
-            meta.model = "colabfold";
-            [meta, it[1]]
-        }
-        .set{ch_msa_final}
+    colabfoldChannel(COLABFOLD_BATCH.out.pdb).set { ch_pdb_final }
+    colabfoldChannel(COLABFOLD_BATCH.out.msa).set { ch_msa_final }
+    colabfoldChannel(COLABFOLD_BATCH.out.pae).set { ch_pae_final }
 
     COLABFOLD_BATCH
         .out
@@ -148,6 +142,7 @@ workflow COLABFOLD {
     top_ranked_pdb = ch_top_ranked_pdb
     pdb            = ch_pdb_final // channel: [ id, /path/to/*.pdb ]
     msa            = ch_msa_final       // channel: [ meta, /path/to/*.pdb, /path/to/*_coverage.png ]
+    pae            = ch_pae_final   // channel: [ id, /path/to/*_pae.tsv ]
     multiqc_report = ch_multiqc_report // channel: /path/to/multiqc_report.html
     versions       = ch_versions       // channel: [ path(versions.yml) ]
 }
